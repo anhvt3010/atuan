@@ -54,7 +54,7 @@ export default function OfferCard({
 
         <View style={styles.infoRow}>
           <Ionicons name="location-outline" size={14} color="#777" />
-          <Text style={styles.infoText}>{distance}</Text>
+          <Text style={styles.infoText}>{distance + " km"}</Text>
         </View>
 
         <View style={styles.infoRow}>

@@ -1,20 +1,33 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { UserProfile } from '@/types/user';
 
-const AuthContext = createContext(null);
+type AuthContextType = {
+  user: UserProfile | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  loading: boolean;
+};
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-  const login = (fakeUser) => setUser(fakeUser);
-  const logout = () => setUser(null);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((state) => state.user);
+  const login = useAuthStore((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);
+  const loading = useAuthStore((state) => state.loading);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider value={{ user, login, logout, loading }}>
+        {children}
+      </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth phải được sử dụng bên trong AuthProvider');
+  }
+  return context;
 }

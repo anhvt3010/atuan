@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, FlatList, Dimensions, TouchableOpacity} from 'react-native';
 import { OrderCard } from '@/components/OrderCard';
 import { EmptyState } from '@/components/EmptyOrderState';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -13,24 +13,24 @@ interface OrderItem {
   status: string;
 }
 
-const activeOrders: OrderItem[] = [
-  {
-    id: '1',
-    title: 'Veggie Sandwich',
-    restaurant: 'Green Bites',
-    image: 'https://source.unsplash.com/100x100/?sandwich',
-    date: 'Apr 25, 2025 - 1:30 PM',
-    status: 'Preparing',
-  },
-  {
-    id: '2',
-    title: 'Cheese Pizza',
-    restaurant: 'Pizzalicious',
-    image: 'https://source.unsplash.com/100x100/?pizza',
-    date: 'Apr 24, 2025 - 7:00 PM',
-    status: 'Completed',
-  },
-];
+// const activeOrders: OrderItem[] = [
+//   {
+//     id: '1',
+//     title: 'Veggie Sandwich',
+//     restaurant: 'Green Bites',
+//     image: 'https://source.unsplash.com/100x100/?sandwich',
+//     date: 'Apr 25, 2025 - 1:30 PM',
+//     status: 'Preparing',
+//   },
+//   {
+//     id: '2',
+//     title: 'Cheese Pizza',
+//     restaurant: 'Pizzalicious',
+//     image: 'https://source.unsplash.com/100x100/?pizza',
+//     date: 'Apr 24, 2025 - 7:00 PM',
+//     status: 'Completed',
+//   },
+// ];
 
 const orderHistory: OrderItem[] = [
   {
@@ -52,18 +52,23 @@ const orderHistory: OrderItem[] = [
 ];
 
 export default function OrdersScreen() {
-  const [index, setIndex] = useState(0); 
+  const [index, setIndex] = useState(0);
+  const [activeOrders, setActiveOrders] = useState(() => {
+    const storedOrders = localStorage.getItem('activeOrders');
+    return storedOrders ? JSON.parse(storedOrders) : [];
+  });
 
   const renderScene = SceneMap({
     active: () => (
       activeOrders.length > 0 ? (
-        <FlatList
-          data={activeOrders}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <OrderCard item={item} />}
-          contentContainerStyle={{ paddingBottom: 16 }}
-          showsVerticalScrollIndicator={false}
-        />
+          <FlatList
+            style={{ marginTop: 16, marginRight: 10, marginLeft: 10 }}
+            data={activeOrders}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <OrderCard item={item} />}
+            contentContainerStyle={{ paddingBottom: 16 }}
+            showsVerticalScrollIndicator={false}
+          />
       ) : (
         <EmptyState text="No active orders yet!" />
       )
@@ -71,6 +76,7 @@ export default function OrdersScreen() {
     history: () => (
       orderHistory.length > 0 ? (
         <FlatList
+          style={{ marginTop: 16, marginRight: 10, marginLeft: 10 }}
           data={orderHistory}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <OrderCard item={item} />}

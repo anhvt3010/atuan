@@ -4,6 +4,7 @@ import { Pressable, Text, View, TouchableOpacity, StyleSheet } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons/';
 //import { AuthProvider, useAuth } from '@/hooks/useAuth';
 import { useAuthStore } from '@/store/useAuthStore';
+import FlashMessage from "react-native-flash-message";
 
 function AppLayout() {
   const navigation = useNavigation();
@@ -47,6 +48,7 @@ function AppLayout() {
           />
         </View>
       )}
+      <FlashMessage position="top" />
     </View>
   );
 }

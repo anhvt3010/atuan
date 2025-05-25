@@ -4,22 +4,20 @@ import {
   fetchHistoryOrders,
   fetchNearbyOffers,
   fetchCurrentDeals,
-  updateOrderFeedback,
 } from '@/api/products';
 import { OrderItem } from '@/types/order';
+import {CategoryResponse} from "@/types/categoryTypes";
+import {fetchCategories} from "@/api/categories";
 
 type ExploreState = {
   historyOrders: OrderItem[];
   nearbyOffers: OrderItem[];
   currentDeals: OrderItem[];
+  categories : CategoryResponse[];
   loading: boolean;
   selectedOffer: OrderItem | null;
   setSelectedOffer: (offer: OrderItem) => void;
   loadExploreData: () => Promise<void>;
-  updateOrderFeedback: (
-    orderId: string,
-    customerFeedback: { customerRating: number; feedback: string }
-  ) => Promise<void>;
 };
 
 export const useProductsStore = create<ExploreState>()(
@@ -28,6 +26,7 @@ export const useProductsStore = create<ExploreState>()(
       historyOrders: [],
       nearbyOffers: [],
       currentDeals: [],
+      categories: [],
       loading: false,
       selectedOffer: null,
 
@@ -35,26 +34,17 @@ export const useProductsStore = create<ExploreState>()(
 
       loadExploreData: async () => {
         set({ loading: true });
-        const [historyOrders, nearbyOffers, currentDeals] = await Promise.all([
+        const [historyOrders, nearbyOffers, currentDeals, categories] = await Promise.all([
           fetchHistoryOrders(),
           fetchNearbyOffers(),
           fetchCurrentDeals(),
+          fetchCategories(),
         ]);
-        set({ historyOrders, nearbyOffers, currentDeals, loading: false });
-      },
-
-      // Update an order’s feedback and rating
-      updateOrderFeedback: async (orderId, customerFeedback) => {
-        const updatedOrder = await updateOrderFeedback(orderId, customerFeedback);
-        set((state) => ({
-          historyOrders: state.historyOrders.map((order) =>
-            order.id === orderId ? updatedOrder : order
-          ),
-        }));
+        set({ historyOrders, nearbyOffers, currentDeals, categories, loading: false });
       },
     }),
     {
-      name: 'products-storage', // storage key
+      name: 'products-storage',
     }
   )
 );

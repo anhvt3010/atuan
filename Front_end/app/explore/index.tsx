@@ -1,17 +1,21 @@
-import React, { useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
 import OfferCard from '@/components/OfferCard';
 import CategoryCard from '@/components/CategoryCard';
 import { useProductsStore } from '@/store/useProductsStore';
 import { ActivityIndicator } from 'react-native';
+import {useFavoritesStore} from "@/store/useFavoritesStore";
+import api from "@/api/axiosConfig";
+import {showMessage} from "react-native-flash-message";
+import {router} from "expo-router";
 
 export default function Explore() {
   const {
     historyOrders,
     nearbyOffers,
     currentDeals,
+    categories,
     loadExploreData,
     loading,
     setSelectedOffer,
@@ -21,12 +25,30 @@ export default function Explore() {
     loadExploreData();
   }, []);
 
-  const categories = [
-    { id: '1', name: 'Bakery', image: 'https://via.placeholder.com/60x60.png?text=Bread' },
-    { id: '2', name: 'Drinks', image: 'https://via.placeholder.com/60x60.png?text=Juice' },
-    { id: '3', name: 'Meals', image: 'https://via.placeholder.com/60x60.png?text=Meal' },
-    { id: '4', name: 'Cafes', image: 'https://via.placeholder.com/60x60.png?text=Cafe' },
-  ];
+  const handleAddFavorite = async (id: string) => {
+    try {
+      useFavoritesStore.setState({ loading: true });
+      await api.post(`/products/${id}/favorite`);
+
+      useFavoritesStore.setState((state) => ({
+        favorites: state.favorites.filter((item) => item.id != id),
+      }));
+      showMessage({
+        message: 'Successfully added',
+        type: 'success',
+        icon: 'success',
+      });
+    } catch (error: any) {
+      showMessage({
+        message: 'Failed to add',
+        type: 'danger',
+        icon: 'danger',
+      });
+    }
+    finally {
+      useFavoritesStore.setState({ loading: false });
+    }
+  };
 
   const renderOfferRow = (title: string, data: typeof historyOrders) => (
     <View style={styles.section}>
@@ -45,8 +67,9 @@ export default function Explore() {
           // Use TouchableOpacity to navigate to the offer details page
           <TouchableOpacity onPress={() => {
             setSelectedOffer(item);
-            //router.push({ pathname: '/offer', params: { offerId: item.id } });
+            // router.push({ pathname: '/offer', params: { offerId: item.id } });
             router.push(`/offer/${item.id}`);
+            // console.log(item);
           }}>
             <OfferCard
               id={item.id}

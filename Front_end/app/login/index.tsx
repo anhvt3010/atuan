@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, Alert } from 'react-native';
-import { Link } from 'expo-router';
+import {View, Text, TextInput, StyleSheet, Pressable, Alert, ActivityIndicator} from 'react-native';
+import {Link, router} from 'expo-router';
 import { useAuthStore } from '@/store/useAuthStore';
+import {showMessage} from "react-native-flash-message";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('tanh@gmail.com');
+  const [password, setPassword] = useState('1234@tanh');
   const login = useAuthStore((state) => state.login);
+  const {
+    loading,
+  } = useAuthStore();
 
   const handleLogin = async () => {
     try {
@@ -16,6 +20,15 @@ export default function LoginScreen() {
       Alert.alert('Login Failed', 'Invalid username or password.');
     }
   };
+
+  if (loading) {
+    return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={{ marginTop: 8, color: '#555'}}>Loading login...</Text>
+        </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -53,6 +66,13 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 120,
+    backgroundColor: '#C4DAD2',
+  },
   container: {
     flex: 1,
     paddingTop: 160,

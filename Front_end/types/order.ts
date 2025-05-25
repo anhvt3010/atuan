@@ -12,10 +12,5 @@ export type OrderItem = {
       address: string;
     };
     description: string;
-    date?: string;
-    customerFeedback?: {
-      customerRating: number;
-      feedback: string;
-    };
   };
   

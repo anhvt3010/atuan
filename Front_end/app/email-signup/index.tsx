@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import {View, Text, TextInput, Pressable, StyleSheet, ActivityIndicator} from 'react-native';
+import {router, useRouter} from 'expo-router';
 import { useAuthStore } from '@/store/useAuthStore';
+import {showMessage} from "react-native-flash-message";
 
 /**
  * @fileoverview This file defines the `Register` component, which provides a user interface
@@ -17,10 +18,14 @@ export default function Register() {
   const router = useRouter();
   const register = useAuthStore((state) => state.register);
 
-  const [fullName, setFullName] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null); // fallback error message
+  const {
+    loading,
+  } = useAuthStore();
 
   const isValidEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -31,7 +36,7 @@ export default function Register() {
   const handleRegister = async () => {
     setError(null); // Clear previous errors
 
-    if (!fullName || !email || !password) {
+    if (!firstname || !lastname  || !email || !password) {
       setError('Please fill in all fields');
       return;
     }
@@ -49,13 +54,37 @@ export default function Register() {
     }
 
     try {
-      await register(fullName, email, password);
-      router.replace('/explore');
+      const res = await register(firstname, lastname, email, password);
+      if (res.success) {
+        showMessage({
+          message: 'Success',
+          description: 'Registration successful!',
+          type: 'success',
+          icon: 'success',
+        });
+        router.replace('/explore');
+      } else {
+        showMessage({
+          message: 'Failed',
+          description: 'Registration Failed!',
+          type: 'danger',
+          icon: 'danger',
+        });
+      }
     } catch (err: any) {
       console.error('Registration error:', err);
       setError(err?.message || 'Registration failed. Please try again.');
     }
   };
+
+  if (loading) {
+    return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+          <Text style={{ marginTop: 8, color: '#555'}}>Loading register...</Text>
+        </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -64,10 +93,16 @@ export default function Register() {
       {error && <Text style={styles.error}>{error}</Text>}
 
       <TextInput
-        placeholder="Full Name"
-        value={fullName}
-        onChangeText={setFullName}
+        placeholder="First Name"
+        value={firstname}
+        onChangeText={setFirstname}
         style={styles.input}
+      />
+      <TextInput
+          placeholder="Last Name"
+          value={lastname}
+          onChangeText={setLastname}
+          style={styles.input}
       />
       <TextInput
         placeholder="Email"
@@ -97,6 +132,13 @@ export default function Register() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 120,
+    backgroundColor: '#C4DAD2',
+  },
   container: {
     flex: 1,
     paddingTop: 60,

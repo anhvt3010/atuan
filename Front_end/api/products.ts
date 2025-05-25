@@ -1,37 +1,36 @@
-import {
-    mockHistoryOrders,
-    mockNearbyOffers,
-    mockCurrentDeals,
-  } from '@/mocks/data/products';
-  
-  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-  
-  export const fetchHistoryOrders = async () => {
-    await delay(300);
-    return mockHistoryOrders;
-  };
-  
-  export const fetchNearbyOffers = async () => {
-    await delay(300);
-    return mockNearbyOffers;
-  };
-  
-  export const fetchCurrentDeals = async () => {
-    await delay(300);
-    return mockCurrentDeals;
-  };
-  
-  // update an order’s feedback and rating
-  export const updateOrderFeedback = async (
-  orderId: string,
-  customerFeedback: { customerRating: number; feedback: string }
-  ) => {
-    await new Promise((res) => setTimeout(res, 300));
+import axios from "axios";
+import {ProductRequest} from "@/types/productTypes";
+import {OrderItem} from "@/types/order";
+import api from "@/api/axiosConfig";
 
-    const index = mockHistoryOrders.findIndex((o) => o.id === orderId);
-    if (index === -1) throw new Error('Order not found');
+// const API_BASE_URL = "https://sustainable-be.code4fun.xyz/api/v1/products";
 
-    mockHistoryOrders[index].customerFeedback = customerFeedback;
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-    return mockHistoryOrders[index];
-  };
+export const fetchHistoryOrders = async () => {
+  try {
+    const response = await api.get<OrderItem>("/products", {} as ProductRequest);
+    return response.data;
+  } catch (error: any) {
+    // throw new Error(error.response?.data?.message || 'Loading failed');
+  }
+};
+
+export const fetchNearbyOffers = async () => {
+  try {
+    const response = await api.get<OrderItem>("/products", {} as ProductRequest);
+    return response.data;
+  } catch (error: any) {
+    // throw new Error(error.response?.data?.message || 'Loading failed');
+  }
+};
+
+export const fetchCurrentDeals = async () => {
+  try {
+    const response = await api.get<OrderItem>("/products", {} as ProductRequest);
+    return response.data;
+  } catch (error: any) {
+    // throw new Error(error.response?.data?.message || 'Loading failed');
+  }
+};
+  

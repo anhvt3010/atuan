@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
             <Text style={styles.buttonText}>Create Account</Text>
           </Pressable>
         </Link>
-        <Link href="/prelogin" asChild>
+        <Link href="/login" asChild>
           <Pressable style={styles.buttonSecondary}>
             <Text style={styles.buttonText}>Log In</Text>
           </Pressable>

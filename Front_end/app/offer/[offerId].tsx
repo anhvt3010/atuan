@@ -19,13 +19,13 @@ export default function OfferItemScreen() {
 
   // Try to find the offer based on ID
   const offer =
-    selectedOffer?.id === offerId
+    selectedOffer?.id == offerId
       ? selectedOffer
-      : [...historyOrders, ...nearbyOffers, ...currentDeals].find((o) => o.id === offerId);
+      : [...historyOrders, ...nearbyOffers, ...currentDeals].find((o) => o.id == offerId);
 
-  console.log('Offer ID:', offerId);
-  console.log('Selected Offer:', selectedOffer);
-  
+  console.log("selectedOffer: ", selectedOffer)
+  console.log("offerId: ", offerId)
+
   // If offer found, update Zustand
   if (!selectedOffer && offer) {
     setSelectedOffer(offer);
@@ -103,7 +103,7 @@ return (
       </View>
     </ScrollView>
 
-    <RescueBar portionsLeft={portionsLeft}/>
+    <RescueBar portionsLeft={portionsLeft} offer={offer}/>
   </ScreenWithBack>
 );
 }
